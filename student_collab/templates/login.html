@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+{% block title %}Login — CollabHub{% endblock %}
+
+{% block content %}
+<div class="auth-wrapper">
+    <div class="auth-card">
+
+        <div class="auth-header">
+            <div class="auth-logo">⬡</div>
+            <h1 class="auth-title">Welcome Back</h1>
+            <p class="auth-sub">Sign in to your CollabHub account</p>
+        </div>
+
+        <form action="{{ url_for('login') }}" method="POST" class="auth-form" id="login-form">
+            <div class="form-group">
+                <label for="username">Username</label>
+                <input type="text" id="username" name="username"
+                       placeholder="Enter your username"
+                       required autocomplete="username" />
+            </div>
+
+            <div class="form-group">
+                <label for="password">Password</label>
+                <div class="input-eye-wrap">
+                    <input type="password" id="password" name="password"
+                           placeholder="Enter your password"
+                           required autocomplete="current-password" />
+                    <button type="button" class="eye-btn" onclick="togglePassword('password', this)">👁</button>
+                </div>
+            </div>
+
+            <button type="submit" class="btn btn-primary btn-full" id="login-btn">
+                Sign In
+            </button>
+        </form>
+
+        <p class="auth-footer">
+            Don't have an account?
+            <a href="{{ url_for('register_page') }}">Create one</a>
+        </p>
+
+    </div>
+
+    <!-- Decorative blobs -->
+    <div class="blob blob-1"></div>
+    <div class="blob blob-2"></div>
+</div>
+{% endblock %}
