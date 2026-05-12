@@ -80,9 +80,7 @@
                     {% if post[5] %}
                     <a href="{{ post[5] }}" target="_blank" rel="noopener" class="post-link">🔗 View Link</a>
                     {% endif %}
-                    {% if post[6] %}
-                    <a href="{{ post[6] }}" download class="post-link">📄 Download File</a>
-                    {% endif %}
+
                 </div>
 
                 <div class="post-footer">
@@ -118,7 +116,7 @@
         </div>
 
         <form action="{{ url_for('add_post') }}" method="POST"
-              enctype="multipart/form-data" class="modal-form" id="add-post-form">
+              class="modal-form" id="add-post-form">
 
             <div class="form-row">
                 <div class="form-group">
@@ -146,18 +144,10 @@
                           placeholder="Describe what you're sharing…" required></textarea>
             </div>
 
-            <div class="form-row">
-                <div class="form-group">
-                    <label for="post-link">External Link <span class="optional">(optional)</span></label>
-                    <input type="url" id="post-link" name="link"
-                           placeholder="https://…" />
-                </div>
-
-                <div class="form-group">
-                    <label for="post-doc">Attach File <span class="optional">(pdf, doc, docx, txt · max 5MB)</span></label>
-                    <input type="file" id="post-doc" name="doc"
-                           accept=".pdf,.doc,.docx,.txt" class="file-input" />
-                </div>
+            <div class="form-group">
+                <label for="post-link">External Link <span class="optional">(optional)</span></label>
+                <input type="url" id="post-link" name="link"
+                       placeholder="https://…" />
             </div>
 
             <div class="modal-actions">
