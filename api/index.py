@@ -157,25 +157,27 @@ def dashboard():
         return redirect(url_for('home'))
     search   = request.args.get('search', '').strip()
     category = request.args.get('category', '')
-    query    = "SELECT * FROM posts WHERE 1=1"
-    params   = []
-    if category:
-        query += " AND category = %s"; params.append(category)
-    if search:
-        query += " AND (LOWER(username) LIKE %s OR LOWER(title) LIKE %s OR LOWER(content) LIKE %s)"
-        t = f"%{search.lower()}%"; params += [t, t, t]
-    query += " ORDER BY created_at DESC"
+    posts    = []
     try:
+        query  = "SELECT * FROM posts WHERE 1=1"
+        params = []
+        if category:
+            query += " AND category = %s"; params.append(category)
+        if search:
+            query += " AND (LOWER(username) LIKE %s OR LOWER(title) LIKE %s OR LOWER(content) LIKE %s)"
+            t = f"%{search.lower()}%"; params += [t, t, t]
+        query += " ORDER BY created_at DESC"
         conn = get_db()
         try:
             cur = conn.cursor(); cur.execute(query, params)
             posts = cur.fetchall()
         finally:
             conn.close()
-        return render_template('dashboard.html', posts=posts, search=search, category=category)
     except Exception as e:
         flash(f"Could not load posts: {e}", "error")
-        return render_template('dashboard.html', posts=[], search=search, category=category)
+    # render_template is OUTSIDE try/except so Jinja2 errors propagate to errorhandler
+    return render_template('dashboard.html', posts=posts, search=search, category=category)
+
 
 @app.route('/add_post', methods=['POST'])
 def add_post():
