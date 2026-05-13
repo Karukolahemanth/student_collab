@@ -86,7 +86,7 @@
                 <div class="post-footer">
                     <span class="post-author">👤 {{ post[1] }}</span>
                     {% if post[7] %}
-                    <span class="post-date">{{ post[7][:10] }}</span>
+                    <span class="post-date">{{ post[7].strftime('%b %d, %Y') }}</span>
                     {% endif %}
                 </div>
             </article>

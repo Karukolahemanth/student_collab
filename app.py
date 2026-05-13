@@ -61,10 +61,13 @@ else:
     print("[Warning] DATABASE_URL not set.")
 
 # ---------- Error Handlers ----------
+import traceback as _tb
+
 @app.errorhandler(500)
 def internal_error(e):
+    full_tb = _tb.format_exc()
     return render_template('error.html', code=500,
-        message=f"Internal error: {e}"), 500
+        message=f"<pre style='text-align:left;font-size:12px;white-space:pre-wrap'>{full_tb}</pre>"), 500
 
 @app.errorhandler(404)
 def not_found(e):
