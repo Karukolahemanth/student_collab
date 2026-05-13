@@ -64,12 +64,37 @@ else:
 @app.errorhandler(500)
 def internal_error(e):
     return render_template('error.html', code=500,
-        message="Something went wrong on our end. Please try again."), 500
+        message=f"Internal error: {e}"), 500
 
 @app.errorhandler(404)
 def not_found(e):
     return render_template('error.html', code=404,
         message="The page you're looking for doesn't exist."), 404
+
+@app.route('/debug')
+def debug():
+    import sys
+    lines = [
+        f"Python: {sys.version}",
+        f"BASE_DIR: {BASE_DIR}",
+        f"TEMPLATE_DIR exists: {os.path.exists(TEMPLATE_DIR)}",
+        f"STATIC_DIR exists: {os.path.exists(STATIC_DIR)}",
+        f"DATABASE_URL set: {bool(DATABASE_URL)}",
+        f"SECRET_KEY set: {bool(os.environ.get('SECRET_KEY'))}",
+    ]
+    if os.path.exists(TEMPLATE_DIR):
+        lines.append(f"Templates: {os.listdir(TEMPLATE_DIR)}")
+    # Try DB connection
+    try:
+        conn = get_db()
+        cur = conn.cursor()
+        cur.execute("SELECT COUNT(*) FROM posts")
+        cnt = cur.fetchone()[0]
+        conn.close()
+        lines.append(f"DB OK — posts count: {cnt}")
+    except Exception as e:
+        lines.append(f"DB ERROR: {e}")
+    return "<br>".join(lines)
 
 # ═══════════════════════════════════════════
 # AUTH
