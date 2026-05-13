@@ -18,6 +18,11 @@
             <span class="nav-logo">⬡</span>
             <span>CollabHub</span>
         </div>
+        <div class="nav-center">
+            <a href="{{ url_for('dashboard') }}" class="nav-link {% if request.endpoint == 'dashboard' %}active{% endif %}">🗂 Feed</a>
+            <a href="{{ url_for('assessments') }}" class="nav-link {% if 'assessment' in request.endpoint %}active{% endif %}">🧠 Assessments</a>
+            <a href="{{ url_for('progress') }}" class="nav-link {% if request.endpoint == 'progress' %}active{% endif %}">📈 Progress</a>
+        </div>
         <div class="nav-right">
             <span class="nav-user">👤 {{ session.username }}</span>
             <a href="{{ url_for('logout') }}" class="btn btn-ghost btn-sm">Logout</a>
@@ -45,5 +50,6 @@
     </main>
 
     <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+    {% block scripts %}{% endblock %}
 </body>
 </html>

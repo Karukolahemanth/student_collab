@@ -1,0 +1,138 @@
+{% extends "base.html" %}
+{% block title %}My Progress — CollabHub{% endblock %}
+
+{% block content %}
+<div class="page-wrapper">
+
+    <div class="page-header">
+        <div>
+            <h1 class="page-title">📈 My Learning Progress</h1>
+            <p class="page-sub">Your activity over the last 12 months</p>
+        </div>
+    </div>
+
+    <!-- ── Stats Cards ── -->
+    <div class="stats-row">
+        <div class="stat-card">
+            <div class="stat-icon">📝</div>
+            <div class="stat-value">{{ stats.get('total_posts', 0) }}</div>
+            <div class="stat-label">Posts Shared</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon">🧠</div>
+            <div class="stat-value">{{ stats.get('total_assessments', 0) }}</div>
+            <div class="stat-label">Quizzes Taken</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon">🎯</div>
+            <div class="stat-value">{{ stats.get('avg_score', 0) }}%</div>
+            <div class="stat-label">Avg Quiz Score</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon">🔥</div>
+            <div class="stat-value">{{ stats.get('active_days', 0) }}</div>
+            <div class="stat-label">Active Days</div>
+        </div>
+    </div>
+
+    <!-- ── Heatmap ── -->
+    <div class="heatmap-section">
+        <div class="heatmap-header">
+            <span id="heatmap-total"></span>
+            <div class="heatmap-legend">
+                <span>Less</span>
+                <div class="legend-box level-0"></div>
+                <div class="legend-box level-1"></div>
+                <div class="legend-box level-2"></div>
+                <div class="legend-box level-3"></div>
+                <div class="legend-box level-4"></div>
+                <span>More</span>
+            </div>
+        </div>
+
+        <div class="heatmap-scroll">
+            <div class="heatmap-labels-left">
+                <span>Mon</span><span>Wed</span><span>Fri</span>
+            </div>
+            <div class="heatmap-grid" id="heatmap-grid"></div>
+        </div>
+
+        <!-- Month labels -->
+        <div class="heatmap-months" id="heatmap-months"></div>
+
+        <!-- Tooltip -->
+        <div class="heatmap-tooltip" id="heatmap-tooltip"></div>
+    </div>
+
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+const activityData = {{ activity_data | safe }};
+
+function buildHeatmap() {
+    const grid   = document.getElementById('heatmap-grid');
+    const months = document.getElementById('heatmap-months');
+    const total  = document.getElementById('heatmap-total');
+    const tip    = document.getElementById('heatmap-tooltip');
+
+    const today    = new Date();
+    const start    = new Date(today);
+    start.setDate(today.getDate() - 364);
+    // Align to Sunday
+    start.setDate(start.getDate() - start.getDay());
+
+    const weeks = 53;
+    grid.style.gridTemplateColumns = `repeat(${weeks}, 13px)`;
+
+    let totalActivity = 0;
+    Object.values(activityData).forEach(v => totalActivity += v);
+    total.textContent = `${totalActivity} contribution${totalActivity !== 1 ? 's' : ''} in the last year`;
+
+    const monthPos = {};
+    let col = 0;
+
+    for (let w = 0; w < weeks; w++) {
+        for (let d = 0; d < 7; d++) {
+            const date = new Date(start);
+            date.setDate(start.getDate() + w * 7 + d);
+
+            const key   = date.toISOString().slice(0, 10);
+            const count = activityData[key] || 0;
+            const level = count === 0 ? 0 : count === 1 ? 1 : count <= 3 ? 2 : count <= 5 ? 3 : 4;
+
+            const cell = document.createElement('div');
+            cell.className = `heatmap-cell level-${level}`;
+            cell.dataset.date  = key;
+            cell.dataset.count = count;
+
+            cell.addEventListener('mousemove', (e) => {
+                const label = count === 0 ? 'No activity' : `${count} activit${count === 1 ? 'y' : 'ies'}`;
+                tip.textContent = `${label} — ${key}`;
+                tip.style.display = 'block';
+                tip.style.left = (e.clientX + 14) + 'px';
+                tip.style.top  = (e.clientY - 32) + 'px';
+            });
+            cell.addEventListener('mouseleave', () => { tip.style.display = 'none'; });
+
+            grid.appendChild(cell);
+
+            // Track month label position
+            const mKey = `${date.getFullYear()}-${date.getMonth()}`;
+            if (!monthPos[mKey]) monthPos[mKey] = { col: w, name: date.toLocaleString('default', { month: 'short' }) };
+        }
+    }
+
+    // Render month labels
+    Object.values(monthPos).forEach(({ col, name }) => {
+        const span = document.createElement('span');
+        span.textContent = name;
+        span.style.gridColumn = col + 1;
+        months.appendChild(span);
+    });
+}
+
+buildHeatmap();
+</script>
+{% endblock %}

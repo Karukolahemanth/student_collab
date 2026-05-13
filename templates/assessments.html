@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+{% block title %}Assessments — CollabHub{% endblock %}
+
+{% block content %}
+<div class="page-wrapper">
+
+    <div class="page-header">
+        <div>
+            <h1 class="page-title">🧠 Assessments</h1>
+            <p class="page-sub">Test your knowledge and challenge your peers</p>
+        </div>
+        <a href="{{ url_for('create_assessment') }}" class="btn btn-primary">+ Create Assessment</a>
+    </div>
+
+    {% if assessments %}
+    <div class="assessment-grid">
+        {% for a in assessments %}
+        {# columns: id, creator, title, description, created_at, qcount, attempts #}
+        <div class="assessment-card" id="assessment-{{ a[0] }}">
+            <div class="assessment-card-top">
+                <div>
+                    <h2 class="assessment-title">{{ a[2] }}</h2>
+                    {% if a[3] %}
+                    <p class="assessment-desc">{{ a[3] }}</p>
+                    {% endif %}
+                </div>
+                {% if a[0] in attempted %}
+                <span class="badge-attempted">✅ Done</span>
+                {% else %}
+                <span class="badge-new">📝 New</span>
+                {% endif %}
+            </div>
+
+            <div class="assessment-meta">
+                <span>❓ {{ a[5] }} question{{ 's' if a[5] != 1 else '' }}</span>
+                <span>👥 {{ a[6] }} attempt{{ 's' if a[6] != 1 else '' }}</span>
+                <span>👤 {{ a[1] }}</span>
+            </div>
+
+            <div class="assessment-footer">
+                {% if a[4] %}
+                <span class="post-date">{{ a[4].strftime('%b %d, %Y') }}</span>
+                {% endif %}
+                <a href="{{ url_for('take_assessment', aid=a[0]) }}" class="btn btn-primary btn-sm">
+                    {{ "Retake" if a[0] in attempted else "Take Quiz" }} →
+                </a>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+    {% else %}
+    <div class="empty-state">
+        <div class="empty-icon">🧠</div>
+        <h3>No assessments yet</h3>
+        <p>Be the first to create a quiz for your peers!</p>
+        <a href="{{ url_for('create_assessment') }}" class="btn btn-primary">+ Create Assessment</a>
+    </div>
+    {% endif %}
+
+</div>
+{% endblock %}
