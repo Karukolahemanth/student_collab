@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{% block title %}Student Collab Hub{% endblock %}</title>
+    <meta name="description" content="A collaborative platform for students to share notes, projects, and resources." />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}" />
+</head>
+<body>
+
+    <!-- ── Navbar ── -->
+    {% if session.username %}
+    <nav class="navbar" id="main-navbar">
+        <div class="nav-brand">
+            <span class="nav-logo">⬡</span>
+            <span>CollabHub</span>
+        </div>
+        <div class="nav-right">
+            <span class="nav-user">👤 {{ session.username }}</span>
+            <a href="{{ url_for('logout') }}" class="btn btn-ghost btn-sm">Logout</a>
+        </div>
+    </nav>
+    {% endif %}
+
+    <!-- ── Flash Messages ── -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+        <div class="flash-container" id="flash-container">
+            {% for category, message in messages %}
+            <div class="flash flash-{{ category }}">
+                <span>{{ message }}</span>
+                <button class="flash-close" onclick="this.parentElement.remove()">✕</button>
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+    {% endwith %}
+
+    <!-- ── Page Content ── -->
+    <main>
+        {% block content %}{% endblock %}
+    </main>
+
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+</body>
+</html>
